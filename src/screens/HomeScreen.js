@@ -8,176 +8,199 @@ import {
   TouchableOpacity,
   ScrollView
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Color, { theme } from '../../utilities/Color';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { debounce, set } from 'lodash';
+import { fetchLocations } from '../../api/weatherApi';
+import { fetchWeatherForecast } from '../../api/weatherApi';
+import { weatherImages } from '../../constants/constans';
+import * as Progress from 'react-native-progress';
 
 const HomeScreen = () => {
   const [showSearch, setShowSearch] = useState(false);
-  const [locations, setLocations] = useState([1, 2, 3]);
+  const [locations, setLocations] = useState([]);
+  const [weather, setWeather] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const handleLocation = (loc) => {
-    console.log('location: ', loc);
+    // console.log('location: ', loc);
+    setLocations([]);
+    setShowSearch(false);
+    setLoading(true);
+    fetchWeatherForecast({
+      cityName: loc.name,
+      days: '7'
+    }).then((data) => {
+      setWeather(data);
+      setLoading(false);
+      storeData('city', loc.name);
+      console.log('got forecast: ', data);
+    });
   };
+
+  const handleSearch = (value) => {
+    // fetch locations
+    if (value.length > 2) {
+      fetchLocations({ cityName: value }).then((data) => {
+        setLocations(data);
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchMyWeatherData();
+  }, []);
+
+  const fetchMyWeatherData = async () => {
+    // let myCity = await getData('city');
+    // let cityName = 'Berlin';
+    // if (myCity) cityName = myCity;
+
+    fetchWeatherForecast({
+      cityName: 'Berlin',
+      days: '7'
+    }).then((data) => {
+      setWeather(data);
+      setLoading(false);
+    });
+  };
+  const handleTextDebounce = useCallback(debounce(handleSearch, 400), []);
+
+  // const formatCountryName = (country) => {
+  //   return country === 'Truthahn' ? 'Turkey' : country;
+  // };
+
+  const { current, location } = weather;
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Image
         source={require('../../assets/images/bg.png')}
         style={styles.backgroundImage}
         blurRadius={70}
       />
-      <SafeAreaView style={styles.safeArea}>
-        {/* Search section */}
-        <View style={styles.searchContainer}>
-          <View
-            style={[
-              styles.innerContainer,
-              {
-                backgroundColor: showSearch ? 'rgba(255, 255, 255, 0.2)' : 'transparent'
-              }
-            ]}>
-            <TextInput
-              style={[styles.textInput, { opacity: showSearch ? 1 : 0 }]}
-              placeholder="Search City"
-              placeholderTextColor={'#FFFFFF'}
-              editable={showSearch}
-            />
+      {loading ? (
+        <View style={styles.loading}>
+          <Progress.CircleSnail thickness={10} size={140} color="#0bb3b2" />
+          {/* <Text style={styles.loadingText}>Loading...</Text> */}
+        </View>
+      ) : (
+        <SafeAreaView style={styles.safeArea}>
+          {/* Search section */}
+          <View style={styles.searchContainer}>
+            <View
+              style={[
+                styles.innerContainer,
+                {
+                  backgroundColor: showSearch ? 'rgba(255, 255, 255, 0.2)' : 'transparent'
+                }
+              ]}>
+              <TextInput
+                onChangeText={handleTextDebounce}
+                style={[styles.textInput, { opacity: showSearch ? 1 : 0 }]}
+                placeholder="Search City"
+                placeholderTextColor={'#FFFFFF'}
+                editable={showSearch}
+              />
 
-            <TouchableOpacity onPress={() => setShowSearch(!showSearch)} style={styles.searchIcon}>
-              <Ionicons name="search-outline" size={25} color="#FFFFFF" />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowSearch(!showSearch)}
+                style={styles.searchIcon}>
+                <Ionicons name="search-outline" size={25} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+            {locations.length > 0 && showSearch ? (
+              <View style={styles.locations}>
+                {locations.map((loc, index) => {
+                  let showBorder = index + 1 !== locations.length;
+                  return (
+                    <TouchableOpacity
+                      onPress={() => handleLocation(loc)}
+                      key={index}
+                      style={[styles.touchableOpacity, showBorder && styles.borderBottom]}>
+                      <Text>
+                        <Ionicons name="location" size={16} />
+                        {loc?.name},{loc?.country}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : null}
           </View>
-          {locations.length > 0 && showSearch ? (
-            <View style={styles.locations}>
-              {locations.map((loc, index) => {
-                let showBorder = index + 1 !== locations.length;
+          {/* forecast section */}
+          <View style={styles.forecastSection}>
+            {/* location */}
+            <Text style={styles.locationText}>
+              {location?.name},<Text style={styles.countryText}>{' ' + location?.country} </Text>
+            </Text>
+
+            {/* weather image */}
+            <View style={styles.weatherImageContainer}>
+              <Image source={weatherImages[current?.condition?.text]} style={styles.weatherImage} />
+            </View>
+
+            {/* degree celcius */}
+            <View style={styles.degreeContainer}>
+              <Text style={styles.temperatureText}>
+                {/* Math.round */}
+                {`${current?.temp_c} ${String.fromCharCode(176)}`}
+              </Text>
+              <Text style={styles.weatherDescriptionText}>{current?.condition?.text} </Text>
+            </View>
+            {/* other status */}
+            <View style={styles.statusContainer}>
+              <View style={styles.status}>
+                <Image source={require('../../assets/icons/wind.png')} style={styles.statusImage} />
+                <Text style={styles.statusText}>{current?.wind_kph}km</Text>
+              </View>
+              <View style={styles.status}>
+                <Image source={require('../../assets/icons/drop.png')} style={styles.statusImage} />
+                <Text style={styles.statusText}>{current?.humidity}% </Text>
+              </View>
+              <View style={styles.status}>
+                <Image source={require('../../assets/icons/sun.png')} style={styles.statusImage} />
+                <Text style={styles.statusText}>6:05 AM</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* forecast for next days */}
+
+          <View style={styles.forecastContainer}>
+            <View style={styles.forecast}>
+              <Ionicons name="calendar" size={22} color="white" />
+              <Text style={styles.forecastText}>Daily Forecast</Text>
+            </View>
+
+            <ScrollView
+              horizontal={true}
+              contentContainerStyle={styles.forecastScrollView}
+              showsHorizontalScrollIndicator={false}>
+              {weather?.forecast?.forecastday?.map((item, index) => {
+                let date = new Date(item.date);
+                let options = { weekday: 'long' };
+                let dayName = date.toLocaleDateString('en-US', options);
                 return (
-                  <TouchableOpacity
-                    onPress={() => handleLocation(loc)}
-                    key={index}
-                    style={[styles.touchableOpacity, showBorder && styles.borderBottom]}>
-                    <Text>
-                      <Ionicons name="location" size={16} />
-                      London,United Kingdom
+                  <View key={index} style={styles.card}>
+                    <Image
+                      source={weatherImages[item?.day?.condition?.text]}
+                      style={styles.forecastImage}
+                    />
+                    <Text style={styles.dayText}>{dayName}</Text>
+                    <Text style={styles.tempText}>
+                      {`${item?.day?.avgtemp_c} ${String.fromCharCode(176)}`}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 );
               })}
-            </View>
-          ) : null}
-        </View>
-        {/* forecast section */}
-        <View style={styles.forecastSection}>
-          {/* location */}
-          <Text style={styles.locationText}>
-            London,
-            <Text style={styles.countryText}>United Kingdom</Text>
-          </Text>
-
-          {/* weather image */}
-          <View style={styles.weatherImageContainer}>
-            <Image
-              source={require('../../assets/images/partlycloudy.png')}
-              style={styles.weatherImage}
-            />
+            </ScrollView>
           </View>
-
-          {/* degree celcius */}
-          <View style={styles.degreeContainer}>
-            <Text style={styles.temperatureText}> {`23${String.fromCharCode(176)}`} </Text>
-            <Text style={styles.weatherDescriptionText}>Partly Cloudy</Text>
-          </View>
-          {/* other status */}
-          <View style={styles.statusContainer}>
-            <View style={styles.status}>
-              <Image source={require('../../assets/icons/wind.png')} style={styles.statusImage} />
-              <Text style={styles.statusText}>22km</Text>
-            </View>
-            <View style={styles.status}>
-              <Image source={require('../../assets/icons/drop.png')} style={styles.statusImage} />
-              <Text style={styles.statusText}>23%</Text>
-            </View>
-            <View style={styles.status}>
-              <Image source={require('../../assets/icons/sun.png')} style={styles.statusImage} />
-              <Text style={styles.statusText}>6:05 AM</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* forecast for next days */}
-
-        <View style={styles.forecastContainer}>
-          <View style={styles.forecast}>
-            <Ionicons name="calendar" size={22} color="white" />
-            <Text style={styles.forecastText}>Daily Forecast</Text>
-          </View>
-
-          <ScrollView
-            horizontal={true}
-            contentContainerStyle={styles.forecastScrollView}
-            showsHorizontalScrollIndicator={false}>
-            <View style={styles.card}>
-              <Image
-                source={require('../../assets/images/heavyrain.png')}
-                style={styles.forecastImage}
-              />
-              <Text style={styles.dayText}>Monday</Text>
-              <Text style={styles.tempText}>{`13${String.fromCharCode(176)}`}</Text>
-            </View>
-            <View style={styles.card}>
-              <Image
-                source={require('../../assets/images/heavyrain.png')}
-                style={styles.forecastImage}
-              />
-              <Text style={styles.dayText}>Tuesday</Text>
-              <Text style={styles.tempText}>{`14${String.fromCharCode(176)}`}</Text>
-            </View>
-            <View style={styles.card}>
-              <Image
-                source={require('../../assets/images/heavyrain.png')}
-                style={styles.forecastImage}
-              />
-              <Text style={styles.dayText}>Wednesday</Text>
-              <Text style={styles.tempText}>{`12${String.fromCharCode(176)}`}</Text>
-            </View>
-            <View style={styles.card}>
-              <Image
-                source={require('../../assets/images/heavyrain.png')}
-                style={styles.forecastImage}
-              />
-              <Text style={styles.dayText}>Thursday</Text>
-              <Text style={styles.tempText}>{`11${String.fromCharCode(176)}`}</Text>
-            </View>
-            <View style={styles.card}>
-              <Image
-                source={require('../../assets/images/heavyrain.png')}
-                style={styles.forecastImage}
-              />
-              <Text style={styles.dayText}>Friday</Text>
-              <Text style={styles.tempText}>{`12${String.fromCharCode(176)}`}</Text>
-            </View>
-            <View style={styles.card}>
-              <Image
-                source={require('../../assets/images/heavyrain.png')}
-                style={styles.forecastImage}
-              />
-              <Text style={styles.dayText}>Saturday</Text>
-              <Text style={styles.tempText}>{`16${String.fromCharCode(176)}`}</Text>
-            </View>
-            <View style={styles.card}>
-              <Image
-                source={require('../../assets/images/heavyrain.png')}
-                style={styles.forecastImage}
-              />
-              <Text style={styles.dayText}>Sunday</Text>
-              <Text style={styles.tempText}>{`15${String.fromCharCode(176)}`}</Text>
-            </View>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      )}
     </View>
   );
 };
@@ -191,6 +214,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: '100%',
     width: '100%'
+  },
+  loading: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 32
   },
   safeArea: {
     flex: 1
