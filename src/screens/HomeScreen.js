@@ -142,21 +142,21 @@ const HomeScreen = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar style="light" />
         <Image
-          source={require('../../assets/images/bg.png')}
+          source={require('../../assets/images/IMG10.jpg')}
           style={styles.backgroundImage}
-          blurRadius={70}
+          blurRadius={50}
         />
         {loading ? (
           <View style={styles.loading}>
-            {/* <Progress.CircleSnail thickness={10} size={140} color="#0bb3b2" /> */}
-            <Animated.Image
+            <Progress.CircleSnail thickness={10} size={140} color="#0bb3b2" />
+            {/* <Animated.Image
               source={require('../../assets/images/hera_snow.jpg')}
               style={{
                 width: 100,
                 height: 100,
                 transform: [{ rotate: spin }]
               }}
-            />
+            /> */}
           </View>
         ) : (
           <SafeAreaView style={styles.safeArea}>
