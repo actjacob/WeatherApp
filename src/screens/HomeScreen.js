@@ -10,17 +10,17 @@ import {
   ScrollView,
   Keyboard,
   KeyboardAvoidingView
-} from 'react-native';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Color, { theme } from '../../utilities/Color';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { debounce, set } from 'lodash';
-import { fetchLocations } from '../../api/weatherApi';
-import { fetchWeatherForecast } from '../../api/weatherApi';
-import { weatherImages } from '../../constants/constans';
-import * as Progress from 'react-native-progress';
+} from "react-native";
+import React, { useCallback, useEffect, useState, useRef } from "react";
+import { StatusBar } from "expo-status-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Color, { theme } from "../../utilities/Color";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { debounce, set } from "lodash";
+import { fetchLocations } from "../../api/weatherApi";
+import { fetchWeatherForecast } from "../../api/weatherApi";
+import { weatherImages } from "../../constants/constans";
+import * as Progress from "react-native-progress";
 
 const HomeScreen = () => {
   const [showSearch, setShowSearch] = useState(false);
@@ -31,7 +31,7 @@ const HomeScreen = () => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
       setKeyboardVisible(true);
       // Animated.timing(scaleAnim, {
       //   toValue: 0.9,
@@ -39,7 +39,7 @@ const HomeScreen = () => {
       //   useNativeDriver: true
       // }).start();
     });
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
       setKeyboardVisible(false);
       // Animated.timing(scaleAnim, {
       //   toValue: 1,
@@ -59,7 +59,7 @@ const HomeScreen = () => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (e) {
-      console.error('Veri kaydedilemedi:', e);
+      console.error("Veri kaydedilemedi:", e);
     }
   };
 
@@ -69,7 +69,7 @@ const HomeScreen = () => {
       const value = await AsyncStorage.getItem(key);
       return value;
     } catch (e) {
-      console.error('error:', e);
+      console.error("error:", e);
       return null;
     }
   };
@@ -81,13 +81,13 @@ const HomeScreen = () => {
     setLoading(true);
     fetchWeatherForecast({
       cityName: loc.name,
-      days: '7'
+      days: "7"
     }).then((data) => {
       setWeather(data);
       setLoading(false);
-      storeData('lastCity', loc.name);
+      storeData("lastCity", loc.name);
       // storeData('city', loc.name);
-      console.log('got forecast: ', data);
+      console.log("got forecast: ", data);
     });
   };
 
@@ -105,12 +105,12 @@ const HomeScreen = () => {
   }, []);
 
   const fetchMyWeatherData = async () => {
-    const lastCity = await getData('lastCity');
-    const cityName = lastCity || 'Berlin';
+    const lastCity = await getData("lastCity");
+    const cityName = lastCity || "Berlin";
 
     fetchWeatherForecast({
       cityName: cityName,
-      days: '7'
+      days: "7"
     }).then((data) => {
       setWeather(data);
       setLoading(false);
@@ -132,7 +132,7 @@ const HomeScreen = () => {
 
   const spin = rotation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '360deg']
+    outputRange: ["0deg", "360deg"]
   });
 
   const { current, location } = weather || {};
@@ -142,7 +142,7 @@ const HomeScreen = () => {
       <SafeAreaView style={styles.container}>
         <StatusBar style="light" />
         <Image
-          source={require('../../assets/images/IMG10.jpg')}
+          source={require("../../assets/images/IMG10.jpg")}
           style={styles.backgroundImage}
           blurRadius={50}
         />
@@ -166,14 +166,14 @@ const HomeScreen = () => {
                 style={[
                   styles.innerContainer,
                   {
-                    backgroundColor: showSearch ? 'rgba(255, 255, 255, 0.2)' : 'transparent'
+                    backgroundColor: showSearch ? "rgba(255, 255, 255, 0.2)" : "transparent"
                   }
                 ]}>
                 <TextInput
                   onChangeText={handleTextDebounce}
                   style={[styles.textInput, { opacity: showSearch ? 1 : 0 }]}
                   placeholder="Search City"
-                  placeholderTextColor={'#FFFFFF'}
+                  placeholderTextColor={"#FFFFFF"}
                   editable={showSearch}
                 />
 
@@ -194,7 +194,7 @@ const HomeScreen = () => {
                         style={[styles.touchableOpacity, showBorder && styles.borderBottom]}>
                         <Text>
                           <Ionicons name="location" size={16} />
-                          {loc?.name},{loc?.country === 'Truthahn' ? 'Turkey' : loc?.country}
+                          {loc?.name},{loc?.country === "Truthahn" ? "Turkey" : loc?.country}
                         </Text>
                       </TouchableOpacity>
                     );
@@ -208,7 +208,7 @@ const HomeScreen = () => {
               <Text style={styles.locationText}>
                 {location?.name},
                 <Text style={styles.countryText}>
-                  {' ' + (location?.country === 'Truthahn' ? 'Turkey' : location?.country)}{' '}
+                  {" " + (location?.country === "Truthahn" ? "Turkey" : location?.country)}{" "}
                 </Text>
               </Text>
 
@@ -224,7 +224,7 @@ const HomeScreen = () => {
               <View style={styles.degreeContainer}>
                 <Text style={styles.temperatureText}>
                   {/* Math.round */}
-                  {`${current?.temp_c} ${String.fromCharCode(176)}`}
+                  {`${current?.temp_c}${String.fromCharCode(176)}`}
                 </Text>
                 <Text style={styles.weatherDescriptionText}>{current?.condition?.text} </Text>
               </View>
@@ -232,21 +232,21 @@ const HomeScreen = () => {
               <View style={styles.statusContainer}>
                 <View style={styles.status}>
                   <Image
-                    source={require('../../assets/icons/wind.png')}
+                    source={require("../../assets/icons/wind.png")}
                     style={styles.statusImage}
                   />
                   <Text style={styles.statusText}>{current?.wind_kph}km</Text>
                 </View>
                 <View style={styles.status}>
                   <Image
-                    source={require('../../assets/icons/drop.png')}
+                    source={require("../../assets/icons/drop.png")}
                     style={styles.statusImage}
                   />
                   <Text style={styles.statusText}>{current?.humidity}% </Text>
                 </View>
                 <View style={styles.status}>
                   <Image
-                    source={require('../../assets/icons/sun.png')}
+                    source={require("../../assets/icons/sun.png")}
                     style={styles.statusImage}
                   />
                   <Text style={styles.statusText}>
@@ -270,8 +270,8 @@ const HomeScreen = () => {
                   showsHorizontalScrollIndicator={false}>
                   {weather?.forecast?.forecastday?.map((item, index) => {
                     let date = new Date(item.date);
-                    let options = { weekday: 'long' };
-                    let dayName = date.toLocaleDateString('en-US', options);
+                    let options = { weekday: "long" };
+                    let dayName = date.toLocaleDateString("en-US", options);
                     return (
                       <View key={index} style={styles.card}>
                         <Image
@@ -280,7 +280,8 @@ const HomeScreen = () => {
                         />
                         <Text style={styles.dayText}>{dayName}</Text>
                         <Text style={styles.tempText}>
-                          {`${item?.day?.avgtemp_c} ${String.fromCharCode(176)}`}
+                          {` ${Math.round(item?.day?.maxtemp_c)}${String.fromCharCode(176)}`}/
+                          {`${Math.round(item?.day?.mintemp_c)}${String.fromCharCode(176)}`}
                         </Text>
                       </View>
                     );
@@ -289,7 +290,6 @@ const HomeScreen = () => {
               </View>
             )}
           </SafeAreaView>
-          // </Animated.View>
         )}
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -299,26 +299,26 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: 'relative'
+    position: "relative"
   },
   backgroundImage: {
-    position: 'absolute',
-    height: '100%',
-    width: '100%'
+    position: "absolute",
+    height: "100%",
+    width: "100%"
   },
   loading: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
   },
   loadingText: {
-    color: 'white',
+    color: "white",
     fontSize: 32
   },
   safeArea: {
     flex: 1,
-    position: 'static'
+    position: "static"
   },
   searchContainer: {
     height: 70,
@@ -327,39 +327,39 @@ const styles = StyleSheet.create({
     marginHorizontal: 16
   },
   innerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: 999,
-    justifyContent: 'space-between',
-    backgroundColor: 'transparent'
+    justifyContent: "space-between",
+    backgroundColor: "transparent"
   },
   textInput: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     paddingLeft: 24,
     height: 50,
     fontSize: 16,
-    color: '#FFFFFF'
+    color: "#FFFFFF"
   },
   searchIcon: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
     padding: 12
   },
   locations: {
-    position: 'absolute',
-    width: '100%',
-    backgroundColor: '#D1D5DB',
+    position: "absolute",
+    width: "100%",
+    backgroundColor: "#D1D5DB",
     top: 64,
     borderRadius: 24
   },
   touchableOpacity: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 0,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -372,53 +372,53 @@ const styles = StyleSheet.create({
   forecastSection: {
     marginHorizontal: 16,
     flex: 1,
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
     marginBottom: 8
   },
   locationText: {
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
     fontSize: 24,
-    fontWeight: 'bold'
+    fontWeight: "bold"
   },
   countryText: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#D1D5DB'
+    fontWeight: "600",
+    color: "#D1D5DB"
   },
   weatherImageContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center'
+    flexDirection: "row",
+    justifyContent: "center"
   },
   weatherImage: {
     width: 208,
     height: 208
   },
   degreeContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 8
   },
   temperatureText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: 'bold',
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
     fontSize: 64,
     marginLeft: 20
   },
   weatherDescriptionText: {
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
     fontSize: 20,
     letterSpacing: 2
   },
   statusContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginHorizontal: 16
   },
   status: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: 8
   },
   statusImage: {
@@ -426,8 +426,8 @@ const styles = StyleSheet.create({
     width: 24
   },
   statusText: {
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
     fontSize: 16,
     marginLeft: 6
   },
@@ -436,40 +436,40 @@ const styles = StyleSheet.create({
     paddingVertical: 12
   },
   forecast: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: 20,
     marginVertical: 8
   },
   forecastText: {
-    color: 'white',
+    color: "white",
     fontSize: 16
   },
   forecastScrollView: {
     paddingHorizontal: 15
   },
   card: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     width: 96,
     borderRadius: 24,
     paddingVertical: 12,
     marginHorizontal: 8,
-    backgroundColor: 'rgba(255,255,255,0.15)'
+    backgroundColor: "rgba(255,255,255,0.15)"
   },
   forecastImage: {
     height: 44,
     width: 44
   },
   dayText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
     marginTop: 4
   },
   tempText: {
-    color: 'white',
+    color: "white",
     fontSize: 20,
-    fontWeight: '600'
+    fontWeight: "600"
   }
 });
 
