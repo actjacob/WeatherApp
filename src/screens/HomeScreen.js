@@ -150,7 +150,7 @@ const HomeScreen = () => {
           <View style={styles.loading}>
             <Progress.CircleSnail thickness={10} size={140} color="#0bb3b2" />
             {/* <Animated.Image
-              source={require('../../assets/images/hera_snow.jpg')}
+              source={require('../../assets/images/.jpg')}
               style={{
                 width: 100,
                 height: 100,
