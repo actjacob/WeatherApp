@@ -1,4 +1,6 @@
-# Hava Durumu Uygulaması
+# WeatherApp
+WeatherApp, kullanıcılara dünya genelindeki şehirlerin hava durumu bilgilerini gösteren bir mobil uygulamadır. React Native kullanılarak geliştirilmiş bu uygulama, kullanıcıların şehirleri aramalarına ve hava durumu tahminlerini görmelerine olanak tanır.
+
 
 Bu proje, kullanıcı dostu bir hava durumu uygulamasıdır.
 
@@ -6,7 +8,8 @@ Bu proje, kullanıcı dostu bir hava durumu uygulamasıdır.
 ![Şehir Arama Ekranı](https://github.com/actjacob/WeatherApp/blob/master/Readme/wearherapplinkdn.jpg)
 ![API'den gelen verilere göre forecast bölümündeki resimlerin dinamik olarak değişmesi](https://github.com/actjacob/WeatherApp/blob/master/Readme/forecast%C4%B1amagesap%C4%B1linkdn.jpg)
 
-Kullanıcılar, şehir arayabilir ve 7 günlük hava tahminlerini görüntüleyebilir.
+
+
 
 🌦️ React Native ile Hava Durumu Uygulaması Geliştirdim! 🌦️
 
@@ -19,13 +22,22 @@ Son Ziyaret Edilen Şehir: En son görüntülenen şehir bilgilerini AsyncStorag
 Animasyonlu Yükleme Ekranı: Veriler yüklenirken dairesel bir yükleme animasyonu sunarak kullanıcı deneyimini iyileştirdim.
 Günlük ve Haftalık Tahminler: Kullanıcılar, sadece günlük değil haftalık tahminlere de ulaşabiliyor.
 Yerelleştirme: Ülke ismini "Turkey" gibi yerelleştirerek görüntülüyorum ve kullanıcılara daha tanıdık bir deneyim sunuyorum.
+## Özellikler
 
-Teknolojiler ve Kütüphaneler:
+- **Hava Durumu Görüntüleme**: Kullanıcılar, şehirlerin hava durumu, sıcaklık, nem, rüzgar hızı gibi bilgilerini görebilirler.
+- **Günlük Hava Durumu Tahminleri**: 7 günlük hava durumu tahminlerini gösterir.
+- **Arama Özelliği**: Kullanıcılar, şehir adı girerek şehir araması yapabilir ve mevcut hava durumu bilgisini alabilir.
+- **Geçmiş Şehirler**: Son arama yapılan şehir, uygulama yeniden açıldığında kullanıcıya gösterilir.
 
-React Native: Ana framework.
-AsyncStorage: Kullanıcı verilerini yerel olarak saklamak için.
-react-native-progress: Yükleme animasyonları için.
-Lodash debounce: Arama fonksiyonundaki gereksiz API çağrılarını engellemek için.
+
+##**Teknolojiler ve Kütüphaneler**
+
+- **React Native**: Mobil uygulama geliştirme için.
+- **Expo**: React Native uygulamalarını hızlı bir şekilde geliştirmek için.
+- **AsyncStorage**: Kullanıcının en son görüntülediği şehir bilgisini yerel depolama alanında saklamak için.
+- **Weather API**: Hava durumu verisi sağlamak için.
+- **react-native-progress**: Yükleme animasyonları için.
+- **Lodash debounce: Arama** fonksiyonundaki gereksiz API çağrılarını engellemek için.
 
 ## Gerekli Kütüphaneler
 
